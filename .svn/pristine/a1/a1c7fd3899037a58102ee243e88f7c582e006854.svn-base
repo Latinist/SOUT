@@ -1,0 +1,408 @@
+package artintech;
+
+import artintech.beans.IComponentContainer;
+//import artintech.dao.DaoPregerister;
+import artintech.dao.DaoPregerister;
+import artintech.dao.DaoRequests;
+import artintech.domain.DogovorDb;
+import artintech.domain.Requests;
+import artintech.domain.User;
+import artintech.domain.WebPreregister;
+import com.vaadin.addon.jpacontainer.JPAContainer;
+import com.vaadin.addon.jpacontainer.JPAContainerFactory;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.filter.Compare;
+import com.vaadin.data.validator.NullValidator;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
+import com.vaadin.ui.themes.Reindeer;
+import de.steinwedel.messagebox.ButtonId;
+import de.steinwedel.messagebox.Icon;
+import de.steinwedel.messagebox.MessageBox;
+import de.steinwedel.messagebox.MessageBoxListener;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Objects;
+
+/**
+ * Created by Анатолий on 29.12.2014.
+ */
+public class Request extends VerticalLayout implements IComponentContainer {
+    private FieldGroup fieldGroup = new FieldGroup();
+    private VerticalLayout contentPan = new VerticalLayout();
+    private JPAContainer<DogovorDb> container;
+    private Table table;
+//    private Integer idGlobal;
+
+    String linkDB;
+    Integer idUser = null;
+    User user = null;
+//    Integer idGlobal = null;
+    Button btnSave = new Button("Далее");
+//    Button buttonAdd = new Button("Добавить");
+//    Button buttonEdit;
+//    Button buttonDelete = new Button("Удалить");
+//    HorizontalLayout headerToolbar = new HorizontalLayout();
+    //private JPAContainer<Requests> ra;
+    //private Table raTable;
+
+    @Override
+    public void init() {
+        linkDB = (String) VaadinSession.getCurrent().getAttribute("linkDB");
+        idUser = (Integer) VaadinSession.getCurrent().getAttribute("iduser");
+//        idGlobal = (Integer) VaadinSession.getCurrent().getAttribute("idglobal");
+        user   = (User) VaadinSession.getCurrent().getAttribute("user");
+//        if (user == null){
+//            DaoPregerister daopr = new DaoPregerister(linkDB);
+//            user = daopr.getAlterUser(idUser);
+//            VaadinSession.getCurrent().setAttribute("user", user);
+//        }
+        setMargin(true);
+        addStyleName("Light");
+//        setStyleName("DolgiWindow");
+//        setHeight("100%");
+//        setSizeFull();
+        BuildMain();
+        setImmediate(true);
+
+    }
+
+    private void BuildMain() {
+//        String s ="На этой форме Вы можете заполнить заявку на проведение специального обследования условий труда на предприятии";
+
+        HorizontalLayout dataPanel = new HorizontalLayout();
+        //HorizontalSplitPanel splitPanel = new HorizontalSplitPanel();
+//        splitPanel.setSizeFull();
+//        splitPanel.setSplitPosition(200, Unit.PIXELS,false);
+        VerticalLayout rPanel = new VerticalLayout();
+        VerticalLayout lPanel = new VerticalLayout();
+
+//        Label header = new Label("<h1><p align=\"center\">"+s+"</p><h1>", ContentMode.HTML);
+
+        contentPan.setMargin(true);
+        //contentPan.addComponent(btnSave);
+        Ruler ruler1 = new Ruler();
+        Ruler ruler2 = new Ruler();
+
+        NullValidator validatorSTR = new NullValidator("Не заполнено поле ввода.", false);
+
+        TextField num_dogovor = new TextField ("Номер договора");
+        num_dogovor.setStyleName("fieldstyle");
+        num_dogovor.setNullRepresentation("");
+        num_dogovor.addStyleName("numericfield");
+        //num_request.addValidator(validatorSTR);
+        num_dogovor.setRequired(true);
+        num_dogovor.setWidth("100px");
+
+        TextField date_create = new TextField ( "дата договора");
+        date_create.setStyleName("fieldstyle");
+        date_create.setNullRepresentation("");
+        date_create.setWidth("130px");
+
+        TextField num_prilog = new TextField ("Номер приложения");
+        num_prilog.setStyleName("fieldstyle");
+        num_prilog.setNullRepresentation("");
+        num_prilog.addStyleName("numericfield");
+        //num_request.addValidator(validatorSTR);
+        num_prilog.setRequired(true);
+        num_prilog.setWidth("100px");
+
+        TextField date_prilog = new TextField ( "дата договора");
+        date_prilog.setStyleName("fieldstyle");
+        date_prilog.setNullRepresentation("");
+        date_prilog.setWidth("130px");
+
+
+        TextField name_org = new TextField ("Название");
+        name_org.setStyleName("fieldstyle");
+        name_org.setNullRepresentation("");
+        name_org.addValidator(validatorSTR);
+        name_org.setRequired(true);
+
+        TextField adress_eval = new TextField ("Адреса мест проведения оценки");
+        adress_eval.setStyleName("fieldstyle");
+        adress_eval.setNullRepresentation("");
+        adress_eval.addValidator(validatorSTR);
+        adress_eval.setRequired(true);
+        adress_eval.setWidth("400px");
+
+        TextField contacts = new TextField ("Контактные данные организации");
+        contacts.setStyleName("fieldstyle");
+        contacts.setNullRepresentation("");
+        contacts.addValidator(validatorSTR);
+        contacts.setRequired(true);
+        contacts.setWidth("400px");
+
+        //biContainer = new BeanItemContainer<WebPreregister>(WebPreregister.class);
+        //item = biContainer.addBean(new WebPreregister());
+//        DaoRequests dao = new DaoRequests(linkDB);
+//        JPAContainer<Requests> container = (JPAContainer<Requests>) dao.getRequests(idUser);
+
+        BigDecimal bd = new BigDecimal(idUser);
+        container = JPAContainerFactory.make(DogovorDb.class, linkDB);
+//        Container.Filter filter = new Compare.Equal("webId",idUser);
+        container.addContainerFilter(new Compare.Equal("webId",idUser));
+        container.applyFilters();
+        int ii = container.size();
+        table = new Table("Текущие договоры", container){
+            @Override
+            protected String formatPropertyValue(Object rowId, Object colId,
+                                Property property) {
+                Object v = property.getValue();
+                if (v instanceof Date) {
+                    Date dateValue = (Date) v;
+//                    return "Formatted date: " + (1900 + dateValue.getYear())
+//                            + "-" + dateValue.getMonth() + "-"
+//                            + dateValue.getDate();
+                    return new SimpleDateFormat("dd-MM-yy").format(dateValue);
+                }
+                return super.formatPropertyValue(rowId, colId, property);
+            }
+        };
+        table.setPageLength(0);
+        table.setWidth("100%");
+        table.setHeightUndefined(); // setHeight("100%");
+        table.setSelectable(true);
+        table.setColumnReorderingAllowed(true);
+        table.setColumnCollapsingAllowed(true);
+
+        table.setVisibleColumns(new Object[]{"regNum2","dtReg","numApp","dtApp"});
+        table.setColumnHeaders(new String[]{"номер", "дата", "номер", "дата"});
+        table.setFooterVisible(false);
+        table.setImmediate(true);
+        //table.addStyleName(Reindeer.T) //("Light");
+        fieldGroup.setReadOnly(true);
+//        if (table.size() == 0){
+//            addItem();
+//        }
+        Object id =  table.firstItemId();
+        table.select(id);
+        Item fItem = table.getItem(id);
+        fieldGroup.setItemDataSource(fItem);
+        table.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(final Property.ValueChangeEvent event) {
+
+                Object id=event.getProperty().getValue();
+                if (id!=null)
+                    fieldGroup.setItemDataSource(container.getItem(id));
+                setReadOnlyField();
+                //editPanel.getBody().setVisible(id != null);
+                //     Item item=  schet.getItem(event.getProperty().getValue());
+                //     final String valueString = String.valueOf(event.getProperty()
+                //              .getValue());
+                //      Notification.show("Value changed:", valueString,
+                //              Type.TRAY_NOTIFICATION);
+            }
+        });
+
+
+
+//        requests.addContainerFilter(new Compare.Equal("idWebUser.id", bd));
+
+
+        final Item item = null;
+        fieldGroup.setBuffered(false);
+
+//        fieldGroup.bind(num_prilog, "numRequests");
+//        fieldGroup.bind(name_org,"nameOrg");
+//        fieldGroup.bind(adress_eval,"addressEval");
+//        fieldGroup.bind(contacts,"contacts");
+//        fieldGroup.bind(workplase_count,"workplaceCount");
+//        fieldGroup.bind(workplase_analog, "workplaceAnalog");
+//
+//        fieldGroup.bind(status_name, "statusName");
+//
+//        fieldGroup.bind(date_create, "dateCreate");
+////        fieldGroup.bind(id_global, "idGlobal");
+//        fieldGroup.bind(id_global, "nameOrgGlobal");
+//        fieldGroup.bind(note, "note");
+
+        setReadOnlyField();
+
+
+
+//        buttonEdit = new Button(fieldGroup.isReadOnly() ? "Редактировать" :   "Просмотр");
+//        buttonAdd.setWidth("130px");
+//        buttonAdd.setEnabled(fieldGroup.isReadOnly() ? false : true);
+//        buttonEdit.setWidth("130px");
+//        buttonDelete.setWidth("130px");
+//        buttonDelete.setEnabled(fieldGroup.isReadOnly() ? false : true);
+        btnSave.setEnabled(fieldGroup.isReadOnly() ? false : true);
+
+//        buttonEdit.addClickListener(new Button.ClickListener() {
+//            @Override
+//            public void buttonClick(Button.ClickEvent clickEvent) {
+//                fieldGroup.setReadOnly(!fieldGroup.isReadOnly());
+//                buttonEdit.setCaption(fieldGroup.isReadOnly() ? "Редактировать" :   "Просмотр");
+//                setReadOnlyField();
+//                buttonDelete.setEnabled(fieldGroup.isReadOnly() ? false : true);
+//                buttonAdd.setEnabled(fieldGroup.isReadOnly() ? false : true);
+//                btnSave.setEnabled(fieldGroup.isReadOnly() ? false : true);
+//            }
+//        });
+
+//        buttonAdd.addClickListener(new Button.ClickListener() {
+//            @Override
+//            public void buttonClick(Button.ClickEvent clickEvent) {
+//                addItem();
+//                setReadOnlyField();
+//
+//            }
+//        });
+//        buttonDelete.addClickListener(new Button.ClickListener() {
+//            @Override
+//            public void buttonClick(Button.ClickEvent clickEvent) {
+//                MessageBox mb = MessageBox.showPlain(Icon.QUESTION,
+//                        "Вы пытаетесь удалить заявку",
+//                        "Вы действительно решили удалить заявку.",
+//                        new MessageBoxListener() {
+//
+//                            @Override
+//                            public void buttonClicked(ButtonId buttonId) {
+//                                if (buttonId.equals(ButtonId.OK)){
+//                                    table.removeItem(table.getValue());
+//                                    table.commit();
+//                                } else {
+//                                    return;
+//                                }
+//                            }
+//                        },
+//                        ButtonId.OK, ButtonId.NO);
+//                        mb.getButton(ButtonId.OK).setCaption("Да");
+//                        mb.getButton(ButtonId.NO).setCaption("Нет");
+//
+//
+//            }
+//        });
+
+        btnSave.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                container.commit();
+                container.refresh();
+            }
+        });
+
+
+//        headerToolbar.addComponent(buttonAdd);
+//        headerToolbar.addComponent(buttonEdit);
+//        headerToolbar.addComponent(buttonDelete);
+
+        VerticalLayout vl0 = new VerticalLayout();
+        vl0.setStyleName("greylayout");
+        vl0.setWidth("100%");
+        FormLayout fl = new FormLayout();
+        fl.setCaption("Детали");
+//        fl.addComponent(num_prilog);
+//        fl.addComponent(name_org);
+//        fl.addComponent(adress_eval);
+//        fl.addComponent(contacts);
+//        fl.addComponent(workplase_count);
+//        fl.addComponent(workplase_analog );
+//        fl.addComponent(status_name );
+//        fl.addComponent(date_create );
+//        fl.addComponent(id_global );
+//        fl.addComponent(note);
+        fl.setWidthUndefined();
+        fl.setMargin(true);
+        vl0.addComponent(fl);
+
+        HorizontalLayout buttons = new HorizontalLayout();
+        btnSave.setWidth("150px");
+        buttons.addComponent(btnSave);
+        buttons.setWidthUndefined();
+
+//        addComponent(header);
+//        addComponent(headerToolbar);
+//        addComponent(new SeparatorL("Список заявок."));
+//        addComponent(splitPanel);
+
+        dataPanel.setWidthUndefined(); // setWidth("100%");
+        addComponent(dataPanel);
+        setComponentAlignment(dataPanel,Alignment.MIDDLE_CENTER);
+        dataPanel.addComponent(lPanel);
+        dataPanel.addComponent(rPanel);
+        lPanel.setWidth("400px");
+        lPanel.setMargin(true);
+        rPanel.setWidthUndefined(); // setWidth("500px");
+        rPanel.setMargin(true);
+        //dataPanel.setExpandRatio(rPanel,1);
+
+//        splitPanel.setFirstComponent(lPanel);
+//        splitPanel.setSecondComponent(rPanel);
+
+        lPanel.addComponent(table);
+//        rPanel.addComponent(new SeparatorL("Содежание заявки"));
+//        rPanel.addComponent(fl);
+//        rPanel.setComponentAlignment(fl, Alignment.TOP_CENTER);
+        rPanel.addComponent(vl0);
+        vl0.setComponentAlignment(fl, Alignment.TOP_CENTER);
+
+        rPanel.addComponent(ruler2);
+//        rPanel.addComponent(new SeparatorL("После заполнения формы нажмите кнопку \"Сохранить\""));
+        rPanel.addComponent(buttons);
+        buttons.setMargin(true);
+        rPanel.setComponentAlignment(buttons, Alignment.TOP_CENTER);
+//        rPanel.addComponent(new SeparatorL("...."));
+        rPanel.setWidth("100%"); // setSizeFull();
+        rPanel.setHeightUndefined();
+        setImmediate(true);
+
+    }
+
+//    private void addItem() {
+//        Requests bin = new Requests();
+//        bin.setNameOrg("Не заполнено");
+//        bin.setIdWebUser(new BigDecimal(idUser));
+//        bin.setContacts(user.getTelephoneStr());
+//        bin.setIdGlobal(user.getIdGlobal());
+//        bin.setIdStatus(1);
+//        bin.setNameOrg(user.getNameOrgStr());
+//        //bin.setNumRequests(bin.getId().toString());
+//        Object o = container.addEntity(bin);
+//        table.setCurrentPageFirstItemId(o);
+//        table.select(o);
+//        container.commit();
+//        //---------- теперь ключ уже присвоен и можно его вытащить------------
+//        Item it1 =container.getItem(o);
+//        String ss = it1.getItemProperty("id").getValue().toString();
+//        it1.getItemProperty("numRequests").setValue(ss);
+//        //------------------------------------------------------
+//        fieldGroup.setReadOnly(false);
+//
+//    }
+
+    private void setReadOnlyField(){
+//        TextField field;
+//        field = (TextField) fieldGroup.getField("statusName");
+//        field.setReadOnly(true);
+//        field = (TextField) fieldGroup.getField("dateCreate");
+//        field.setReadOnly(true);
+//        field = (TextField) fieldGroup.getField("nameOrgGlobal");
+//
+//        field.setReadOnly(true);
+    }
+}
+
+
+/*
+
+получить следующий ключ
+To get only next sequence value you can use the following:
+
+Query q = em.createNativeQuery("select nextval('schema.sequence_name')");
+return (Long)q.getSingleResult();
+*/

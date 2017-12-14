@@ -1,0 +1,337 @@
+
+package artintech;
+
+import artintech.beans.IComponentContainer;
+import artintech.dao.DaoDocs;
+import artintech.dao.DaoDogovors;
+import artintech.domain.*;
+import com.vaadin.addon.jpacontainer.JPAContainer;
+import com.vaadin.addon.jpacontainer.JPAContainerFactory;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.filter.Compare;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
+import com.vaadin.ui.themes.Runo;
+import com.vaadin.ui.themes.ValoTheme;
+import com.wcs.wcslib.vaadin.widget.multifileupload.ui.MultiFileUpload;
+import com.wcs.wcslib.vaadin.widget.multifileupload.ui.UploadFinishedHandler;
+import com.wcs.wcslib.vaadin.widget.multifileupload.ui.UploadStateWindow;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * Created by Анатолий on 02.07.2015.
+ */
+public class UploadFiles extends VerticalLayout implements IComponentContainer{
+    String linkDB;
+    Integer idUser = null;
+    User user = null;
+    private BigDecimal currentIdRequest = null;
+    private Integer idGlobal = null;
+    private BigDecimal idDogovor = null;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yy");
+    private Table table;
+    private HashMap<BigDecimal,BigDecimal> hashIdRequests = new HashMap<BigDecimal,BigDecimal>();
+    //---------------------------------------------------------------------------------------
+    String PuthToTmp;
+    String PuthToExp;
+
+    public UploadFiles() {
+    }
+    //---------------------------------------------------------------------------------------
+
+
+    @Override
+    public void init() {
+        linkDB = (String) VaadinSession.getCurrent().getAttribute("linkDB");
+        idUser = (Integer) VaadinSession.getCurrent().getAttribute("iduser");
+        user   = (User) VaadinSession.getCurrent().getAttribute("user");
+        idGlobal = (Integer) VaadinSession.getCurrent().getAttribute("idglobal");
+        if (VaadinSession.getCurrent().getAttribute("idRequest") != null) {
+            currentIdRequest = (BigDecimal) VaadinSession.getCurrent().getAttribute("idRequest");
+        }
+        if (VaadinSession.getCurrent().getAttribute("idDogovor") != null) {
+            idDogovor = (BigDecimal) VaadinSession.getCurrent().getAttribute("idDogovor");
+        }
+
+        //---------------------------------------------------------------------------------------
+        //PuthToTmp = VaadinSession.getCurrent().getService().getBaseDirectory().getAbsolutePath() + "\\..\\..\\TMP";
+        //PuthToExp = VaadinSession.getCurrent().getService().getBaseDirectory().getAbsolutePath() + "\\..\\..\\SETUP\\documents\\experts\\"+idGlobal.toString()+"\\uploads";
+        //---------------------------------------------------------------------------------------
+
+        setMargin(false);
+        addStyleName("Light");
+
+        BuildMain();
+        setImmediate(true);
+
+    }
+
+    private void BuildMain() {
+        VerticalLayout outPanel = new VerticalLayout();
+        outPanel.setWidth("95%");
+        outPanel.setHeight("600px");
+        outPanel.addStyleName("semitransparentlayout");
+        outPanel.setMargin(true);
+        VerticalLayout contentOutPanel = new VerticalLayout();
+        contentOutPanel.setWidth("100%");
+        contentOutPanel.setHeightUndefined();
+        //-----------------------------------------------------
+//        Label lvelkome = new Label("<p align=\"center\">Пожалуйста, выберите файлы для загрузки  и загрузите их на портал:</p>", ContentMode.HTML);
+//        lvelkome.addStyleName("h2");
+//        lvelkome.setWidth("80%");
+//        lvelkome.addStyleName(ValoTheme.LABEL_NO_MARGIN);
+
+        final ComboBox request = new com.vaadin.ui.ComboBox();
+        request.setWidth("420px");
+        request.setNullSelectionAllowed(false);
+        request.setDescription("Выбор договора и (возможно) приложения для последующей загрузки документов");
+        request.addStyleName("shadow");
+        loadData(request);
+        request.setScrollToSelectedItem(true);
+        request.setTextInputAllowed(false);
+        request.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                if (valueChangeEvent != null) {
+                    idDogovor = (BigDecimal) request.getValue();
+                    currentIdRequest = hashIdRequests.get(idDogovor);
+                    VaadinSession.getCurrent().setAttribute("idRequest", currentIdRequest);
+                    VaadinSession.getCurrent().setAttribute("idDogovor", idDogovor);
+
+                    if (table != null){
+                        if (table.getContainerDataSource() != null) {
+                            JPAContainer<VReeDocs> docs = (JPAContainer<VReeDocs>) table.getContainerDataSource();
+                            docs.removeAllContainerFilters();
+                            docs.addContainerFilter(new Compare.Equal("idContract", idDogovor.toBigInteger()));
+                            docs.applyFilters();
+                        }
+                    }
+                   // table.refreshRowCache();
+                }
+            }
+        });
+        if (idDogovor != null) {
+            request.setValue(idDogovor);
+        }
+        request.isImmediate();
+
+        //----------------------------------------------------------------------
+        UploadFinishedHandler handler = new UploadFinishedHandler() {
+            @Override
+            public void handleFile(InputStream inputStream, String fileName, String mimType, long length) {
+                String mess = "Файлы: ";
+                try {
+                    DaoDocs dao = new DaoDocs(linkDB);
+
+                    String ext = fileName.substring(fileName.lastIndexOf('.')+1,fileName.length()).toUpperCase();
+                    BigDecimal fileSize = new BigDecimal(length);
+                    if (ext.equals("XML")){
+                        dao.setDocToDb(inputStream, fileName, idUser, currentIdRequest, new BigDecimal(100), idDogovor, fileSize);
+                    } else {
+//                        dao.uploadDocToDb(inputStream,fileName,idUser, currentIdRequest,new BigDecimal(entyti1.getId()) );
+                        dao.uploadDocToDb(inputStream,fileName,idUser, currentIdRequest,new BigDecimal(101), idDogovor ,fileSize);
+                    }
+                    mess += " "+fileName;
+                    //---- после тестирования----
+                    Logger.getLogger(getClass().getName()).log(Level.SEVERE, mess+" успешно загружены");
+                    Notification.show(mess+" успешно загружены",Notification.Type.WARNING_MESSAGE);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Ошибка при загрузке файла на сервер");
+                    Notification.show("Ошибка при загрузке файлов на сервер",Notification.Type.ERROR_MESSAGE);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Ошибка при записи файла в БД");
+                    Notification.show("Ошибка при записи файла в БД ("+e.getMessage()+")", Notification.Type.ERROR_MESSAGE);
+                }
+
+                JPAContainer<VReeDocs> ct  = (JPAContainer<VReeDocs>) table.getContainerDataSource();
+                ct.refresh();
+                table.refreshRowCache();
+
+            }
+        };
+
+//        Button btnSave = new Button("Далее");
+        //-------------------------------------------------------------------------
+        UploadStateWindow window = new UploadStateWindow();
+//        MultiFileUpload singleUpload = new MultiFileUpload(handler,window, false);
+//        singleUpload.setPanelCaption("Загрузить одиночный файл");
+//        singleUpload.getSmartUpload().setUploadButtonCaptions("Загрузить одиночный файл","");
+
+        MultiFileUpload multiUpload = new MultiFileUpload(handler,window);
+        multiUpload.setPanelCaption("Загрузить файлы");
+        multiUpload.getSmartUpload().setUploadButtonCaptions("Загрузить одиночный файл","Загрузить файлы");
+        multiUpload.addStyleName("shadow");
+        HorizontalLayout uploadLayout =  new HorizontalLayout();
+        uploadLayout.setWidthUndefined();
+        uploadLayout.setSpacing(true);
+        uploadLayout.setMargin(false);
+//        uploadLayout.addComponent(singleUpload);
+        uploadLayout.addComponent(multiUpload);
+
+//        //-----------------------------------------------------
+
+        JPAContainer<VReeDocs> docs = JPAContainerFactory.make(VReeDocs.class, linkDB);
+        docs.setReadOnly(true);
+        docs.addContainerFilter(new Compare.Equal("idContract", idDogovor.toBigInteger()));
+        docs.applyFilters();
+
+//        table = new Table("Список выгруженных документов для заключения договора с экспертной организацией",docs);
+        table = new Table();
+        table.setContainerDataSource(docs);
+//        table.setWidth("60%");
+        table.setWidth("600px");
+        table.setHeight("250px");
+        table.setSelectable(true);
+        table.setImmediate(true);
+        table.setVisibleColumns(new Object[]{"dttm", "filename" });//  });
+        table.setColumnHeaders(new String[]{"Дата выгрузки", "Название файла"});
+        //table.setColumnWidth("id",50);
+        table.setColumnWidth("dttm",140);
+        table.addStyleName("shadow");
+
+        final Button.ClickListener btnListener = new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                Object item = clickEvent.getButton().getData();
+                //table.removeItem(item);
+                int iItem = ((BigDecimal) item).intValue();
+                boolean isXml = (iItem%10 == 1);
+                int fId = iItem/10;
+                // 0 = REE_DOCS 1-REE_XML
+                DaoDocs dao = new DaoDocs(linkDB);
+                BigDecimal bId = BigDecimal.valueOf(iItem/10);
+                dao.deleteDoc(bId,isXml);
+
+                JPAContainer<VReeDocs> ct  = (JPAContainer<VReeDocs>) table.getContainerDataSource();
+                ct.refresh();
+                table.refreshRowCache();
+                Notification.show("Запись удалена");
+            }
+        };
+
+        table.addGeneratedColumn("Операция", new Table.ColumnGenerator() {
+            public Object generateCell(Table source, Object itemId, Object columnId) {
+                //myItemId = itemId;
+                Button tf = new Button("Удалить");
+                tf.setData(itemId);
+                tf.addClickListener(btnListener);
+                return tf;
+            }
+        });
+        table.setColumnWidth("Операция", 85);
+
+//        HorizontalLayout captVelcome = new HorizontalLayout();
+        Label lab1 =  new Label("Здесь Вы можете выгрузить первичные документы на портал экспертной организации.");
+        lab1.setStyleName("h2");
+        lab1.setWidthUndefined();
+
+        //Label lab2 =  new Label("для загрузки документов.");
+//        captVelcome.addComponent(lab1);
+//        captVelcome.addComponent(request);
+//        captVelcome.addComponent(lab2);
+//        captVelcome.setWidthUndefined();
+
+
+
+        Button readyButton = new Button("Готово");
+        readyButton.setWidth("150px");
+        readyButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                DaoDogovors dao = new DaoDogovors(linkDB);
+                try {
+                    dao.setContractToReady(idDogovor);
+                    Notification.show("Экспертная организация проинформирована о том, что Вы завершили загрузку первичных документов, необходимых для проведения СОУТ", Notification.Type.WARNING_MESSAGE);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    Notification.show("Ошибка при записи в базу данных", Notification.Type.ERROR_MESSAGE);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Notification.show("Ошибка при записи в базу данных", Notification.Type.ERROR_MESSAGE);
+                }
+            }
+        });
+
+
+        Label l1 = new Label("<p align=\"center\">Пожалуйста, выберите файлы требуемых документов и загрузите их на портал, для дальнейшего проведения работ по СОУТ. " +
+                "Список уже загруженных файлов показан ниже в таблице.</p>",ContentMode.HTML);
+        l1.addStyleName("h3");
+        l1.setWidth("80%");
+//        Label l2 = new Label("Файлы Вы можете загружать как поочередно, так и группой. Как Вам удобно. Список уже загруженных файлов показан ниже в таблице.");
+        //l2.addStyleName("h3");
+//        l2.setWidthUndefined();
+        Label l3 = new Label("Список загруженых файлов"); l3.addStyleName("h3"); l3.setWidthUndefined();
+        Label l4 = new Label("Если Вы загрузили все файлы, нажмите кнопку \"Готово\"");// l4.addStyleName("h3");
+        l4.setWidthUndefined();
+//        contentOutPanel.addComponent(lvelkome);
+
+
+        contentOutPanel.addComponent(lab1); contentOutPanel.setComponentAlignment(lab1,Alignment.TOP_CENTER);
+        contentOutPanel.addComponent(request); contentOutPanel.setComponentAlignment(request,Alignment.TOP_CENTER);
+//        contentOutPanel.setComponentAlignment(lvelkome, Alignment.TOP_CENTER);
+
+        contentOutPanel.addComponent(l1);
+        contentOutPanel.setComponentAlignment(l1,Alignment.TOP_CENTER);
+//        contentOutPanel.addComponent(request);
+//        contentOutPanel.setComponentAlignment(request, Alignment.TOP_CENTER);
+//        contentOutPanel.addComponent(l2); contentOutPanel.setComponentAlignment(l2,Alignment.TOP_CENTER);
+        contentOutPanel.addComponent(uploadLayout); contentOutPanel.setComponentAlignment(uploadLayout, Alignment.TOP_CENTER);
+        contentOutPanel.addComponent(l3); contentOutPanel.setComponentAlignment(l3, Alignment.TOP_CENTER);
+        contentOutPanel.addComponent(table); contentOutPanel.setComponentAlignment(table, Alignment.TOP_CENTER);
+        //contentOutPanel.addComponent(l4); contentOutPanel.setComponentAlignment(l4, Alignment.TOP_CENTER);
+        //contentOutPanel.addComponent(readyButton); contentOutPanel.setComponentAlignment(readyButton,Alignment.TOP_CENTER);
+        //-----------------------------------------------------
+        outPanel.addComponent(contentOutPanel);
+        addComponent(outPanel);
+        setComponentAlignment(outPanel, Alignment.TOP_CENTER);
+        addComponent(l4);
+        setComponentAlignment(l4, Alignment.TOP_CENTER);
+        addComponent(readyButton);
+        setComponentAlignment(readyButton,Alignment.TOP_CENTER);
+
+        //-----------------------------------------
+        FactoryTrains factoryTrains =  new FactoryTrains();
+        HorizontalLayout podballogo = (HorizontalLayout) factoryTrains.makeTrain(new String[]{"Договоры", "Список документов","Сервис","Загрузка"},4);
+        addComponent(podballogo);
+        setComponentAlignment(podballogo,Alignment.TOP_CENTER);
+        //-----------------------------------------
+
+    }
+
+    private void loadData(ComboBox request) {
+        EntityManager emTu = Persistence
+                .createEntityManagerFactory(linkDB)
+                .createEntityManager();
+        BeanItemContainer<DogovorDb> biContainer = new BeanItemContainer<DogovorDb>(DogovorDb.class);
+        biContainer.addAll(emTu.createQuery("select g from DogovorDb g where g.webId = :idUser").setParameter("idUser", idUser).getResultList());
+        for (DogovorDb dog: biContainer.getItemIds()){
+            request.addItem(dog.getId());
+            hashIdRequests.put(dog.getId(), dog.getIdRequest());
+            String sPril = "";
+            if ((dog.getNumApp() != null) || (dog.getDtApp() !=null)) {
+              sPril = " Приложение:" + ((dog.getNumApp() == null) ?  "-" : dog.getNumApp()) + "/" + ((dog.getDtApp() == null) ?  "-" : simpleDateFormat.format(dog.getDtApp()));
+            }
+            String sDog = "Договор:"+ dog.getRegNum()+" / "+simpleDateFormat.format(dog.getDtReg());
+            request.setItemCaption(dog.getId(), sDog + sPril);
+        }
+        emTu.close();
+    }
+}

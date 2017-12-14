@@ -1,0 +1,438 @@
+
+$v-font-size: 14px;
+$v-border-radius: 1px;
+$v-font-family: Tahoma Regular, Helvetica, sans-serif;
+/* Import the reindeer theme. */
+/* This only allows us to use the mixins defined in it and does not add any styles by itself. */
+//@import "../reindeer/reindeer.scss";
+@import "../valo/valo.scss";
+//@import "../runo/runo.scss";
+//@import "../chameleon/chameleon.scss";
+//@import "/styles.css";
+
+/* This contains all of your theme. */
+/* If somebody wants to extend the theme she will include this mixin. */
+@mixin mytheme {
+  /* Include all the styles from the reindeer theme */
+  //  @include reindeer;
+  @include valo;
+  //  @include runo;
+  //  @include chameleon;
+
+  /* Insert your theme rules here */
+
+  // ----- стиль главного окна задает фон окна -----
+  &.v-app{
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    background-image: url("img/backgraund_main.png");
+  }
+//  background-image: url("/VAADIN/themes/mytheme/img/backgraund_main.png");
+  //    background-image: url('/VAADIN/themes/mytheme/img/backgraund_main.png');
+
+  // ==========================================================================================
+  // ====================================   переопределение общих стилей  =====================
+  // ==========================================================================================
+
+  //---------- применение непонятно ------------
+  .button-style .v-button-wrap {
+    background: transparent;
+  }
+
+  //----- переопределяется цвет всех заголовков прямого вызова нет ----------
+  .v-captiontext {
+    color: slategray; /* red;*/
+    font-size:  large;
+  }
+  //------ переопределение размера шрифта заголовков всех панелей
+  .v-panel-caption
+  {
+    font-size:  large;
+    /*        background: #335C77;  */
+    /*        font-weight: bold;   */
+    /*        font-style: normal;  */
+    /*        height: 25px;  */
+    /*        padding-left: 8px;  */
+    /*        padding-top: 4px;  */
+    /*        padding-bottom: 3px;  */
+  }
+  //---- ручного вызова нет переопределение стиля заголовка----
+  .v-caption-editstyle {
+    font-weight: bold;
+  }
+  //---- применение непонятно ------------
+  .v-textfield-edit
+  {
+    margin-top: -1px;
+  }
+
+  //----- применение непонятно  возможно влияет на menuBar--------
+  .horizontal-separator {
+    background:black;
+  }
+
+
+  // ================================================================================
+  // ====================================   Ручной вызов стиля  =====================
+  // ================================================================================
+
+  //---- стиль Label для subheader ручной вызов---
+  .v-label-labelcapt{
+    //font-weight: bold;
+    color:black;
+    alignment-adjust:central;
+    width:100%;
+  }
+
+  //-------------- задает стиль меню Ручной вызов -----------------
+  .menubararea{
+
+    font-family: Uni Sans Regular;
+    font-size: 14pt;
+    filter: alpha(Opacity=80);
+    -moz-opacity: 0.8;
+    -khtml-opacity: 0.8;
+    opacity: 0.8;
+
+
+    /* цвет шифта         color:blue; */
+    /*background-color: blue;*/
+    /*background-attachment:scroll;*/
+    //    background: transparent;
+    //     styly: Social;
+    background-image:-webkit-gradient(linear,left bottom,left top,
+            color-stop(0%,#525252), color-stop(100%,#FFFFFF));
+    background-image:-webkit-linear-gradient(#525252,#FFFFFF);
+    background-image:-moz-linear-gradient(top,#525252,#FFFFFF);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#525252', endColorstr='#FFFFFF');
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#525252', endColorstr='#FFFFFF')";
+    background-image: -ms-linear-gradient(#525252,#FFFFFF);
+    background-image: -o-linear-gradient(#525252,#FFFFFF);
+    background-image: linear-gradient(#525252,#FFFFFF);
+
+    filter: alpha(Opacity=80);
+    //    text-align: center;
+    border:  1px solid black;
+    color: black;
+    width:100%;
+    //height: 40px;
+    min-width: 100%;
+    text-shadow: none;
+    box-shadow: 0px 5px 5px #999;
+
+
+  }
+
+  //------  ручной вызов применяется в CommоnView для установки смещения тулбара ------
+  .toolbar{
+    margin-top: 0px;
+  }
+
+  //----- ручной вызо белый цвет фона Label на сетке ------
+  .whiteLabel{
+    background: #ffffff;
+  }
+
+  //----- ручной вызов серый фон layout применяется для панели ------------
+  .greylayout{
+    background: #E8E8E8
+  }
+  //-----------------------------  тень применяется для панели --------------------
+  .shadow{
+    box-shadow: 5px 5px 5px #999;
+  }
+
+  //------------------------ полупрозначный фон для layout и panel -------------------
+  .semitransparentlayout{
+    // черный просвечивает поверх фона затемняя его
+    //background: rgba(0,0,0,.2);
+
+    // белый просвечивает поверх фона
+    background: #7f7f7f;
+    background: rgba(255,255,255,.3);
+
+  }
+
+  .paddingFull{
+    padding: 10px;
+  }
+
+  .transparent {
+    background: transparent;
+    background-color:transparent;
+  }
+
+  .borderred {
+    border:  1px solid red;
+  }
+
+  //--------------- не проверял -------------------
+  .mybutton:hover {
+          background-color: #ddd;
+  }
+
+
+  //  .v-button-multiline .v-button-caption {
+  //    white-space: normal;
+  //  }​
+
+  //  .centerText{
+  //    text-align: center;
+  //  }
+
+  // ================================================================================
+  // ==================================== сейчас не применяется =====================
+  // ================================================================================
+
+  //------- стиль layout сейчас не применяется  -----------
+  .v-horizontalLayout-toolbararea{
+    background-image:-webkit-gradient(linear,left bottom,left top,
+            color-stop(0%,#525252), color-stop(100%,#FFFFFF));
+    background-image:-webkit-linear-gradient(#525252,#FFFFFF);
+    background-image:-moz-linear-gradient(top,#525252,#FFFFFF);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#525252', endColorstr='#FFFFFF');
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#525252', endColorstr='#FFFFFF')";
+    background-image: -ms-linear-gradient(#525252,#FFFFFF);
+    background-image: -o-linear-gradient(#525252,#FFFFFF);
+    background-image: linear-gradient(#525252,#FFFFFF);
+    border:  1px solid black;
+    color: black;
+    width:100%;
+    height: 40px;
+    min-width: 100%;
+    text-shadow: none;
+    font-size: 24px;
+    box-shadow: 10px 10px 5px #aaa;
+
+  }
+
+  //-------- прозрачная панель сейчас не применяется --------------
+  .v-scrollable {
+    background: transparent;
+    height: 100%;
+  }
+
+  //----------- прозрачная кнопка сейчас не применяется------------------
+  .transparentColor {
+    background: transparent;
+    background-color:transparent;
+    text-align: center;
+  }
+
+  //----------- применялся в welkome  сейчас отключен ---------------
+  .backColor{
+    //background: black ;
+    background-image:-webkit-gradient(linear,left bottom,left top,
+            color-stop(0%,#525252), color-stop(100%,#FFFFFF));
+    background-image:-webkit-linear-gradient(#525252,#FFFFFF);
+    background-image:-moz-linear-gradient(top,#525252,#FFFFFF);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#525252', endColorstr='#FFFFFF');
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#525252', endColorstr='#FFFFFF')";
+    background-image: -ms-linear-gradient(#525252,#FFFFFF);
+    background-image: -o-linear-gradient(#525252,#FFFFFF);
+    background-image: linear-gradient(#525252,#FFFFFF);
+    border:  1px solid black;
+    color: black;
+    width:100%;
+    height: 40px;
+    min-width: 100%;
+    text-shadow: none;
+    font-size: 24px;
+    box-shadow: 10px 10px 5px #aaa;
+
+  }
+
+  //----- Применение непонятно Скоре всего смещялась картинка ключа когда он был--------
+  .v-embedded-image{
+    margin-left: -50;
+  }
+
+  //---- Сейчас вызов закомментирован----
+  .v-panel-loginpanel{
+    padding:5px;
+    margin: 5px;
+    border: 2px solid black;
+  }
+
+  .colorlink {
+    color: darkblue;
+  }
+
+  .v-textfield-gray {
+    //    background: #F1F1F1;
+    background: #E0E0E0;
+    //    background: black; то работает
+    //    background: rgba(250, 250, 250, 0.96);
+    //    background: #E8E8E8; /* Has shading image by default */
+  }
+
+  //---- ручной вызов при определении стиля редактирования полей сейчас не используется-------
+  .v-caption-fieldstyle {
+    font-weight: bold;
+    color: darkblue;
+  }
+
+  // ------ стиль добавлялся к панели в форме register  сейчас отключен--------
+  .v-verticallayout-login
+  {
+    padding-top: 100px;
+  }
+
+  //------ выравнивание вправо цифровых полей сейчас не применяется ----------
+  .numericfield{
+    text-align:right; /*!important;*/
+  }
+
+  // ==================================== разметка окна =======---------=============
+  #body {
+    height:100%;
+  }
+
+  #header {
+    height: 40px;
+    width:  100%;
+    //    http://ktonanovenkogo.ru/html/div-verstka-html/blochnaya-verstka-div-verstka-kak-prizhat-footer-k-nizhnej-chasti-ekrana-maket-sajta-blochnoj-verstki.html
+    padding-top : 0px;
+    padding-left: 0px;
+
+    //    background-color: transparent;
+    //    background-image: url('/VAADIN/themes/mytheme/img/tovznak.gif');
+    //    background-position: center;
+    //    background-repeat: no-repeat;
+    //    background-size: 80px 75px;
+    //    position:fixed;
+    //    z-index:2;
+    //    top: 0;
+
+  }
+
+  #subheader {
+    height:30px;
+    //    background-color:Deepskyblue; /* lightskyblue;*/
+    background: transparent;
+    text-align:center;
+  }
+
+
+  #maket {
+    width:100%;
+    margin:0 auto;
+    min-height: 100%;
+
+    background-size: cover;
+    height: 800px;
+    //    min-height: 100%;
+    background-repeat: no-repeat;
+    background-color: cornflowerblue;
+    background-image: url('/VAADIN/themes/mytheme/img/splash.jpg');
+  }
+
+  #mainpanel {
+    /*	height: 100px; */
+    width:100%;
+
+    margin:0 auto;
+    /*        margin-top: 100px; */
+    padding:5px;
+
+    #footer {
+      height:100px;
+
+      /*      border: 1px solid black; */
+      /*	background-color:#606060; */
+    }
+  }
+
+
+
+  //  .panelFields{
+  //    background:transparent;
+  //      //transparent;
+  //    backgroundColor:transparentize(rgba(0, 0, 0, 0.5), 0.1))
+  //
+  //  }
+
+  //  .v-generated-body{
+  //    height:100%;
+  //    background-color: cornflowerblue;
+  //  }
+
+  //  #header1 {
+  //    height: 75px;
+  //    border: 1px solid black;
+  //    padding-top:5px;
+  //    padding-left:10px;
+  //
+  ////    background-color: cornflowerblue;
+
+  ////    background-image: url('/VAADIN/themes/mytheme/img/splash.jpg');
+
+  ////    background-size: 100%
+  //  }
+
+  /*        border: 1px solid black; */
+  /*
+     background-image: url('/VAADIN/themes/mytheme/img/tovznak.gif');
+     background-attachment: fixed;
+     background-position: center;
+     background-size: auto;
+     background-repeat: no-repeat;
+ */
+}
+
+//  .v-view{
+//    background-size: cover;
+//    background-repeat: no-repeat;
+//    background-color: cornflowerblue;
+/*    min-height: 100%; */
+//    height: 100px;
+//    background-image: url('/VAADIN/themes/mytheme/img/splash.jpg');
+//  }
+
+//  #menuheader {
+//    height:30px;
+//    text-align:left;
+//    /* если градиент не поддерживается - сплошная заливка */
+//    background:Deepskyblue; /*cornflowerblue;*/  /* #87CEFA; Для старых браузров */
+//    /*
+//      background-image:-webkit-gradient(linear,left bottom,left top,
+//                    color-stop(0%,Deepskyblue), color-stop(100%,#87CEFA));
+//      background-image:-webkit-linear-gradient(Deepskyblue,#87CEFA);
+//      background-image:-moz-linear-gradient(top,Deepskyblue,#87CEFA);
+//      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='Deepskyblue', endColorstr='#87CEFA');
+//      -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='Deepskyblue', endColorstr='#87CEFA')";
+//      background-image: -ms-linear-gradient(Deepskyblue,#87CEFA);
+//      background-image: -o-linear-gradient(Deepskyblue,#87CEFA);
+//      background-image: linear-gradient(Deepskyblue,#87CEFA);
+//    */
+//  }
+
+//  #body, html {
+//    margin:0px;
+//    padding:0px;
+//    height: 100%;
+//  }
+
+
+
+/*
+.centerLabel{
+  font-weight: bold;
+  color:black;
+  margin-top: -10px;
+  padding-top: -10px;
+  width:100%;
+}
+*/
+
+//  .v-panel {
+//    background: transparent ;
+//  }
+
+//  .v-table-header {
+//    color: #fff;
+//    background: #4455aa;
+//    font-weight: bold;
+//    text-align: center;
+//  }

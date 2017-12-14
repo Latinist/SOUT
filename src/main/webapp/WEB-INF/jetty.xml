@@ -1,0 +1,29 @@
+<<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+<Configure class="org.eclipse.jetty.server.Server">
+<!--Sberbank Services DataSource configuration-->
+<New id="servicesSOUT" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>jdbc/serviceSOUT</Arg>
+    <Arg>
+        <New class="oracle.jdbc.pool.OracleDataSource">
+            <Set name="DriverType">thin</Set>
+            <Set name="URL">jdbc:oracle:thin:@SERVER_PC:1521:SOUT</Set>
+            <Set name="User">sout69</Set>
+            <Set name="Password">masterkey</Set>
+            <Set name="connectionCachingEnabled">true</Set>
+            <Set name="connectionCacheProperties">
+                <New class="java.util.Properties">
+                    <Call name="setProperty">
+                        <Arg>MinLimit</Arg>
+                        <Arg>10</Arg>
+                    </Call>
+                    <Call name="setProperty">
+                        <Arg>MaxLimit</Arg>
+                        <Arg>10</Arg>
+                    </Call>
+                </New>
+            </Set>
+        </New>
+    </Arg>
+</New>
+</Configure>

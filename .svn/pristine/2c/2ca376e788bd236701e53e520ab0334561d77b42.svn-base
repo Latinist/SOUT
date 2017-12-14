@@ -1,0 +1,99 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package artintech.beans;
+
+import artintech.HeaderAreaImpl;
+import artintech.SeparatorL;
+import artintech.SeparatorM;
+import artintech.ToolBarImpl;
+import artintech.beans.IComponentContainer;
+import artintech.domain.User;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
+import org.springframework.context.annotation.Scope;
+
+/**
+ *
+ * @author Сергей
+ */
+@org.springframework.stereotype.Component
+@Scope("prototype")
+public class CommonView extends CustomComponent implements View {
+    //private StatePlat statePlat;
+    private CustomLayout castomLayout;
+    private Boolean initialised = false;
+    private IComponentContainer consist;
+    private Layout toolbar = null;
+    private Label labelCapt = new Label("", ContentMode.HTML);
+    public CommonView(){
+    }
+    public void init(){
+        //statePlat = (StatePlat)  VaadinSession.getCurrent().getAttribute("statePlat");
+        
+        InitWindow();
+        setCompositionRoot(castomLayout);
+    }
+    private void InitWindow(){
+        castomLayout = new CustomLayout("sout-login-layout");
+        HeaderAreaImpl headerArea = new HeaderAreaImpl();
+        headerArea.setWidth("100%");
+//        HorizontalLayout tb = new HorizontalLayout();
+//        tb.setWidth("100%");
+
+        //ToolBarImpl tb = new ToolBarImpl();
+        //tb.addStyleName("toolbar");
+        //headerArea.addComponent(tb);
+        if (toolbar != null){
+            headerArea.addComponent(toolbar);
+//            tb.addComponent(toolbar);
+//            headerArea.addComponent(new SeparatorL("......"));
+            toolbar.addStyleName("toolbar");
+        }
+        castomLayout.addComponent((Component)headerArea,"header");
+//        castomLayout.addComponent((Component) new SeparatorL("......"), "header");
+
+        labelCapt.setStyleName("labelcapt");
+
+        castomLayout.addComponent(labelCapt, "subheader");
+//        castomLayout.setComponentAlignment(meta, Alignment.MIDDLE_CENTER);
+//        castomLayout.addComponent(new MenuBarArea(),"menuheader");
+        consist.init();
+        castomLayout.addComponent(consist,"mainpanel");
+        isImmediate();
+        
+    }
+    public void setComponentContainer(IComponentContainer container){
+        this.consist = container;
+    }
+    public void setToolBarContainer(Layout toolbar){
+        this.toolbar = toolbar;
+    };
+
+    @Override
+    public void enter(ViewChangeEvent event) {
+       if (!initialised) {
+          initialised = true; 
+          init();
+       }
+       User user = (User) VaadinSession.getCurrent().getAttribute("user");
+       String infoUser = "";
+       if (user != null) {
+
+           infoUser = "Организация:  <font color=\"blue\">" + user.getNameOrgStr() + "</font>"+
+                    ", электронный адрес: <font color=\"blue\">" + user.geteMailStr() + "</font>" +
+                    ", контактный телефон: <font color=\"blue\">" + user.getTelephoneStr() + "</font>";
+           String txt ="<b><p style=\"margin: 0px -4px\" align=\"center\">" + infoUser + "</p><b>";
+           labelCapt.setValue(txt);
+           labelCapt.setImmediate(true);
+
+       }
+
+    }
+    
+}

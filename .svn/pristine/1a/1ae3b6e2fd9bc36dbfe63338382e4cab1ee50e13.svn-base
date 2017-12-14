@@ -1,0 +1,20 @@
+<body location="body" id="body">
+<!--<div location="maket" id="maket">-->
+        <div location="header1" id="header1"> Спрут
+        </div>
+        <div location="header" id="header"></div>
+
+	    <div location="subheader" id="subheader">
+        </div>
+    
+	    <!--<div location="menuheader" id="menuheader"> </div>-->
+
+        <div  id="main">
+            <div location="mainpanel" id="mainpanel"> 
+            </div>
+        </div>
+<!--</div>-->
+
+<!--https://vaadin.com/wiki/-/wiki/Main/Vaadin+Theme+Tips+and+Tricks-->
+<!--http://ktonanovenkogo.ru/html/div-verstka-html/blochnaya-verstka-div-verstka-kak-prizhat-footer-k-nizhnej-chasti-ekrana-maket-sajta-blochnoj-verstki.html-->
+</body>

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="sout-request:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="sout-request-1.0.war">
+      <element id="artifact" artifact-name="sout-request:war exploded" />
+    </root>
+  </artifact>
+</component>

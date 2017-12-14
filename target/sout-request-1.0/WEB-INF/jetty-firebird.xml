@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd" >
+<Configure class="org.eclipse.jetty.server.Server">
+    <New id="serviceSOUT" class="org.eclipse.jetty.plus.jndi.Resource">
+        <Arg>jdbc/serviceSOUT</Arg>
+        <Arg>
+            <New class="org.firebirdsql.pool.FBWrappingDataSource">
+<!--                <Set name="database">jdbc:firebirdsql:127.0.0.1:c:/db/web/sprut.fdb</Set>  -->
+                <Set name="database">localhost/3050:c:/db/web/sprut.fdb</Set>
+                <Set name="userName">sysdba</Set>
+                <Set name="password">masterkey</Set>
+                <Set name="maxPoolSize">10</Set>
+                <Set name="minPoolSize">5</Set>
+                <Set name="encoding">UTF8</Set>
+                <Set name="type">javax.sql.DataSource</Set>
+            </New>
+        </Arg>
+    </New>
+</Configure>
+

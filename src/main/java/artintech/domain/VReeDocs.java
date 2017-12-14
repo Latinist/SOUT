@@ -1,0 +1,203 @@
+package artintech.domain;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Date;
+
+/**
+ * Created by Анатолий on 06.07.2015.
+ */
+
+@Entity
+@Table(name = "V_REE_DOCS")
+@XmlRootElement
+@NamedQueries({
+        @NamedQuery(name = "VReeDocs.findAll", query = "SELECT r FROM VReeDocs r"),
+        @NamedQuery(name = "VReeDocs.findByRnum", query = "SELECT r FROM VReeDocs r WHERE r.rnum = :rnum"),
+        @NamedQuery(name = "VReeDocs.findById", query = "SELECT r FROM VReeDocs r WHERE r.id = :id"),
+        @NamedQuery(name = "VReeDocs.findByIdRequests", query = "SELECT r FROM VReeDocs r WHERE r.idRequests = :idRequests"),
+        @NamedQuery(name = "VReeDocs.findByIdPreregister", query = "SELECT r FROM VReeDocs r WHERE r.idPreregister = :idPreregister"),
+        @NamedQuery(name = "VReeDocs.findByDoctype", query = "SELECT r FROM VReeDocs r WHERE r.doctype = :doctype"),
+        @NamedQuery(name = "VReeDocs.findByFilename", query = "SELECT r FROM VReeDocs r WHERE r.filename = :filename"),
+        @NamedQuery(name = "VReeDocs.findByIdContract", query = "SELECT r FROM VReeDocs r WHERE r.idContract = :idContract"),
+        @NamedQuery(name = "VReeDocs.findByFileSize", query = "SELECT r FROM VReeDocs r WHERE r.fileSize = :fileSize"),
+        @NamedQuery(name = "VReeDocs.findByNote", query = "SELECT r FROM VReeDocs r WHERE r.note = :note"),
+        @NamedQuery(name = "VReeDocs.findByDttm", query = "SELECT r FROM VReeDocs r WHERE r.dttm = :dttm")
+})
+
+public class VReeDocs implements Serializable{
+    private static final long serialVersionUID = 1L;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Id
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "RNUM")
+    private BigDecimal rnum;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "ID")
+    private BigDecimal id;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "ID_REQUESTS")
+    private BigInteger idRequests;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "ID_PREREGISTER")
+    private BigInteger idPreregister;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "DOCTYPE")
+    private BigInteger doctype;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 100)
+    @Column(name = "FILENAME")
+    private String filename;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "DTTM")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dttm;
+    @NotNull
+    @Column(name = "ID_CONTRACT")
+    private BigDecimal idContract;
+    @Column(name = "FILESIZE")
+    private  BigDecimal fileSize;
+    @Column(name = "NOTE")
+    private  String note;
+
+//    @Lob
+//    @Column(name = "BODY")
+//    private Serializable body;
+
+    public VReeDocs() {
+    }
+
+    public VReeDocs(BigDecimal id) {
+        this.id = id;
+    }
+
+    public VReeDocs(BigDecimal id, BigInteger idRequests, BigInteger idPreregister, BigInteger doctype, String filename, Date dttm) {
+        this.id = id;
+        this.idRequests = idRequests;
+        this.idPreregister = idPreregister;
+        this.doctype = doctype;
+        this.filename = filename;
+        this.dttm = dttm;
+    }
+
+    public BigDecimal getId() {
+        return id;
+    }
+
+    public void setId(BigDecimal id) {
+        this.id = id;
+    }
+
+    public BigInteger getIdRequests() {
+        return idRequests;
+    }
+
+    public void setIdRequests(BigInteger idRequests) {
+        this.idRequests = idRequests;
+    }
+
+    public BigInteger getIdPreregister() {
+        return idPreregister;
+    }
+
+    public void setIdPreregister(BigInteger idPreregister) {
+        this.idPreregister = idPreregister;
+    }
+
+    public BigInteger getDoctype() {
+        return doctype;
+    }
+
+    public void setDoctype(BigInteger doctype) {
+        this.doctype = doctype;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public Date getDttm() {
+        return dttm;
+    }
+
+    public void setDttm(Date dttm) {
+        this.dttm = dttm;
+    }
+
+    public String getNote() {return note;}
+    public void setNote(String note) {this.note = note;}
+
+
+//    public Serializable getBody() {
+//        return body;
+//    }
+
+//    public void setBody(Serializable body) {
+//        this.body = body;
+//    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (rnum != null ? rnum.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof VReeDocs)) {
+            return false;
+        }
+        VReeDocs other = (VReeDocs) object;
+        if ((this.rnum == null && other.rnum != null) || (this.rnum != null && !this.rnum.equals(other.rnum))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "artintech.domain.VReeDocs[ id=" + id + " ]";
+    }
+
+    public BigDecimal getIdContract() {
+        return idContract;
+    }
+
+    public void setIdContract(BigDecimal idContract) {
+        this.idContract = idContract;
+    }
+
+    public BigDecimal getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(BigDecimal fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    public BigDecimal getRnum() {
+        return rnum;
+    }
+    public void setRnum(BigDecimal rnum) {
+        this.rnum = rnum;
+    }
+
+}

@@ -1,0 +1,153 @@
+package artintech;
+
+import artintech.beans.IComponentContainer;
+import artintech.dao.DaoPregerister;
+import artintech.dao.DaoRequests;
+import com.vaadin.server.FileResource;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
+import com.vaadin.ui.VerticalLayout;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.security.PublicKey;
+
+/**
+ * Created by Анатолий on 29.01.2015.
+ */
+public class Dogovors extends VerticalLayout implements IComponentContainer {
+    private Integer idGlobal = null;
+    public Dogovors(){};
+    private String linkDB;
+
+    @Override
+    public void init() {
+        setMargin(true);
+        setHeight("100%");
+        setSizeFull();
+       // setStyleName("LispRaWindow");
+        idGlobal = (Integer) VaadinSession.getCurrent().getAttribute("idglobal");
+        linkDB = (String) VaadinSession.getCurrent().getAttribute("linkDB");
+        BuildMain();
+        BuildSecond();
+        setImmediate(true);
+    }
+
+    private void BuildSecond() {
+        ThemeResource ICON = new ThemeResource("img/16/action_save.gif");
+        String holderNeedDocs = VaadinSession.getCurrent().getService().getBaseDirectory().getAbsolutePath() + "\\..\\..\\SETUP\\documents\\experts\\"+idGlobal.toString()+"\\downloads\\needdocs";
+
+        StringBuffer output = new StringBuffer(110);
+        output.append("<table bgcolor=\"#F0FFFF\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\" width=\"100%\">");
+        output.append("<tbody>");
+        output.append("<tr align=\"center\" bgcolor=\"#ADD8E6\">");
+        output.append(" <td>Название документа</td>");
+        output.append("</tr>");
+
+        File myFolder = new File(holderNeedDocs);
+        File[] files = myFolder.listFiles();
+        Integer ii = 0;
+        for (File file:files){
+            output.append("<tr align=\"left\">");
+            output.append(" <td align=\"left\" location=\"file"+ii.toString()+"\" ></td>");
+            output.append("</tr>");
+            ii++;
+        }
+
+        output.append("</tbody></table>");
+        CustomLayout custom = null;
+        try {
+            custom = new CustomLayout(new ByteArrayInputStream(output.toString().getBytes("UTF-8")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ii = 0;
+        for (File file:files){
+            FileResource resource =  new FileResource(file);
+            String filename = file.getName();
+            Link link = new Link(filename, resource);
+            link.setTargetName("_top");
+            link.setIcon(ICON);
+
+            custom.addComponent(link, "file" + ii);
+            ii++;
+        }
+
+        DaoPregerister dao = new DaoPregerister(linkDB);
+        addComponent(custom);
+
+        addComponent(new Label("Требуемые документы предоставляются в электронном или сканированном виде."+
+               " Документы могут быть отправлены с использованием сервиса, предоставленного на закладке \"Документы \" или через электронную почту. ("+dao.getEMailExpertOrg(idGlobal)+")" ));
+        addComponent(new SeparatorL("...."));
+
+    }
+
+    private void BuildMain() {
+        ThemeResource ICON = new ThemeResource("img/16/action_save.gif");
+        String holderDogs = VaadinSession.getCurrent().getService().getBaseDirectory().getAbsolutePath() + "\\..\\..\\SETUP\\documents\\experts\\"+idGlobal.toString()+"\\downloads\\dogovors";
+        String ss = "<h1 align=\"center\">Заключение договора </h1> <font size=\"4\" FACE=\"Times New Roman\">"
+                +" <p>На этой странице Вы можете выбрать подходящий для Вас вариант договора и скачать текст требуемого типового договора для дальнейшего согласования."
+                +"</p>"
+                +"</font>";
+        Label headComment = new Label(ss, ContentMode.HTML);
+//        Ruler ruler1 = new Ruler();
+        Ruler ruler2 = new Ruler();
+
+        addComponent(headComment);
+        addComponent(ruler2);
+        addComponent(new SeparatorL("Перечень вариантов договоров."));
+
+        StringBuffer output = new StringBuffer(110);
+        output.append("<table bgcolor=\"#F0FFFF\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\" width=\"100%\">");
+        output.append("<tbody>");
+        output.append("<tr align=\"center\" bgcolor=\"#ADD8E6\">");
+        output.append(" <td>Название документа</td>");
+        output.append("</tr>");
+
+
+        File myFolder = new File(holderDogs);
+        File[] files = myFolder.listFiles();
+        Integer ii = 0;
+        for (File file:files){
+//            FileResource resource =  new FileResource(new File(myFolder+"\\"+file));
+            output.append("<tr align=\"left\">");
+            output.append(" <td align=\"left\" location=\"file"+ii.toString()+"\" ></td>");
+            output.append("</tr>");
+            ii++;
+            //lay.addComponent(link);
+        }
+
+        output.append("</tbody></table>");
+        CustomLayout custom = null;
+        try {
+            custom = new CustomLayout(new ByteArrayInputStream(output.toString().getBytes("UTF-8")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ii = 0;
+        for (File file:files){
+            FileResource resource =  new FileResource(file);
+            String filename = file.getName();
+            Link link = new Link(filename, resource);
+            link.setTargetName("_top");
+            link.setIcon(ICON);
+
+            custom.addComponent(link, "file" + ii);
+            ii++;
+        }
+
+        addComponent(custom);
+        addComponent(new SeparatorL("Перечень требуемых документов."));
+
+
+    }
+
+
+}

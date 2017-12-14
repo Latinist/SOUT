@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+  <persistence-unit name="serviceSOUT" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <!--   <non-jta-data-source>sprut</non-jta-data-source>  -->
+    <non-jta-data-source>java:comp/env/jdbc/serviceSOUT</non-jta-data-source>
+    <!--  этот тег не обязателен -->
+    <class>artintech.domain.DogovorDb</class>
+    <class>artintech.domain.Requests</class>
+    <class>artintech.domain.WebPreregister</class>
+    <class>artintech.domain.SprStatus</class>
+    <class>artintech.domain.SprOrgExp</class>
+    <class>artintech.domain.SprDocs</class>
+    <class>artintech.domain.ReeDocs</class>
+    <class>artintech.domain.ReeXml</class>
+    <class>artintech.domain.VReeDocs</class>
+    <properties>
+      <property name="eclipselink.jdbc.platform" value="org.eclipse.persistence.platform.database.FirebirdPlatform"/>
+      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="eclipselink.ddl-generation.output-mode" value="database"/>
+      <!--      <property name="eclipselink.exclude-eclipselink-orm" value="false"/>    -->
+      <!--      <property name="javax.persistence.jdbc.driver" value="org.firebirdsql.jdbc.FBDriver"/> -->
+      <!--      <property name="javax.persistence.jdbc.url" value="jdbc:firebirdsql:localhost/3050:c:/DB/sprut.fdb"/> -->
+      <!--      <property name="javax.persistence.jdbc.user" value="sysdba"/> -->
+      <!--      <property name="javax.persistence.jdbc.password" value="masterkey"/> -->
+      <!--      <property name="eclipselink.cache.size.default" value="0"/> -->
+      <!--      <property name="eclipselink.cache.type.default" value="NONE"/> -->
+      <property name="eclipselink.cache.size.default" value="0"/>
+      <property name="eclipselink.cache.type.default" value="NONE"/>
+    </properties>
+  </persistence-unit>
+</persistence>
